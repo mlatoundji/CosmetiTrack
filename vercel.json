@@ -7,12 +7,12 @@
   "regions": ["cdg1"],
   "env": {
     "NODE_ENV": "staging",
-    "DATABASE_URL": "@staging-database-url",
-    "NEXTAUTH_URL": "@staging-nextauth-url",
-    "NEXTAUTH_SECRET": "@staging-nextauth-secret",
-    "LOG_LEVEL": "@staging-log-level",
-    "SENTRY_DSN": "@staging-sentry-dsn",
-    "NEW_RELIC_LICENSE_KEY": "@staging-new-relic-license-key",
-    "NEW_RELIC_APP_NAME": "@staging-new-relic-app-name"
+    "DATABASE_URL": "your_database_url",
+    "NEXTAUTH_URL": "https://cosmetitrack.vercel.app",
+    "NEXTAUTH_SECRET": "your_nextauth_secret",
+    "LOG_LEVEL": "info",
+    "SENTRY_DSN": "your_sentry_dsn",
+    "NEW_RELIC_LICENSE_KEY": "your_new_relic_license_key",
+    "NEW_RELIC_APP_NAME": "CosmetiTrack-Staging"
   }
 } 
