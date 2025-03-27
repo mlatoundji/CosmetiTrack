@@ -1,7 +1,9 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { prisma } from './prisma';
-import { compare } from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+
+const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,7 +15,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error('Invalid credentials');
+          throw new Error('Please enter an email and password');
         }
 
         const user = await prisma.user.findUnique({
@@ -23,12 +25,15 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user) {
-          throw new Error('User not found');
+          throw new Error('No user found with this email');
         }
 
-        const isValid = await compare(credentials.password, user.password);
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
 
-        if (!isValid) {
+        if (!isPasswordValid) {
           throw new Error('Invalid password');
         }
 
@@ -36,29 +41,28 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
-          role: user.role,
         };
       },
     }),
   ],
+  session: {
+    strategy: 'jwt',
+  },
+  pages: {
+    signIn: '/auth/login',
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role as string;
+        session.user.id = token.id as string;
       }
       return session;
     },
-  },
-  pages: {
-    signIn: '/auth/login',
-  },
-  session: {
-    strategy: 'jwt',
   },
 }; 
