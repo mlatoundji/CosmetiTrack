@@ -1,7 +1,4 @@
 {
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/products/page": "app/dashboard/products/page.js",
-  "/dashboard/products/brands/page": "app/dashboard/products/brands/page.js",
-  "/dashboard/products/add/page": "app/dashboard/products/add/page.js",
-  "/dashboard/products/categories/page": "app/dashboard/products/categories/page.js"
+  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }

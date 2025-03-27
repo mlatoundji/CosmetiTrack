@@ -44,10 +44,10 @@ export async function GET(request: Request) {
     })
 
     // Get recent inventory transactions
-    const recentTransactions = await prisma.inventoryTransaction.findMany({
+    const recentTransactions = await prisma.transaction.findMany({
       include: {
         product: true,
-        batch: true,
+        user: true,
       },
       orderBy: {
         createdAt: 'desc',

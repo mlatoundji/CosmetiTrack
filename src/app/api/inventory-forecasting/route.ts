@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     }
 
     // Get historical transaction data
-    const transactions = await prisma.inventoryTransaction.findMany({
+    const transactions = await prisma.transaction.findMany({
       where: {
         productId,
         createdAt: {
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
       if (!acc[date]) {
         acc[date] = 0;
       }
-      if (transaction.type === 'OUT') {
+      if (transaction.type === 'STOCK_OUT') {
         acc[date] += transaction.quantity;
       }
       return acc;
