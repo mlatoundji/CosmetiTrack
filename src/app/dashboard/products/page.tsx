@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ProductList } from '@/components/products/ProductList';
+import { Prisma, ProductStatus } from '@prisma/client';
 
 interface ProductsPageProps {
   searchParams: {
@@ -28,26 +29,26 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const skip = (page - 1) * limit;
 
   // Build where clause based on filters
-  const where = {
+  const where: Prisma.ProductWhereInput = {
     AND: [
       searchParams.search
         ? {
             OR: [
-              { name: { contains: searchParams.search, mode: 'insensitive' } },
-              { sku: { contains: searchParams.search, mode: 'insensitive' } },
-              { description: { contains: searchParams.search, mode: 'insensitive' } },
+              { name: { contains: searchParams.search, mode: Prisma.QueryMode.insensitive } },
+              { sku: { contains: searchParams.search, mode: Prisma.QueryMode.insensitive } },
+              { description: { contains: searchParams.search, mode: Prisma.QueryMode.insensitive } },
             ],
           }
         : {},
       searchParams.category ? { categoryId: searchParams.category } : {},
       searchParams.brand ? { brandId: searchParams.brand } : {},
       searchParams.supplier ? { supplierId: searchParams.supplier } : {},
-      searchParams.status ? { status: searchParams.status } : {},
-    ],
+      searchParams.status ? { status: searchParams.status as ProductStatus } : {},
+    ].filter(condition => Object.keys(condition).length > 0),
   };
 
   // Build orderBy clause based on sort parameters
-  const orderBy = searchParams.sortBy
+  const orderBy: Prisma.ProductOrderByWithRelationInput = searchParams.sortBy
     ? { [searchParams.sortBy]: searchParams.sortOrder || 'asc' }
     : { name: 'asc' };
 
