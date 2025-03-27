@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { PRISMA_MODELS } from '@/lib/constants'
 
 export async function GET(request: Request) {
   try {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
       ]
     }
 
-    const products = await prisma.product.findMany({
+    const products = await prisma[PRISMA_MODELS.PRODUCT].findMany({
       where,
       include: {
         category: true,
@@ -70,6 +71,7 @@ export async function POST(request: Request) {
       categoryId,
       supplierId,
       brandId,
+      sku,
       barcode,
       purchasePrice,
       salePrice,
@@ -83,32 +85,53 @@ export async function POST(request: Request) {
       images,
     } = data
 
-    const product = await prisma.product.create({
+    // Validate required fields
+    if (!name || !sku || !categoryId || !supplierId || !purchasePrice || !salePrice || !currentPrice || !quantity) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    const product = await prisma[PRISMA_MODELS.PRODUCT].create({
       data: {
         name,
         description,
-        categoryId,
-        supplierId,
-        brandId,
+        sku,
         barcode,
         purchasePrice,
         salePrice,
         currentPrice,
         quantity,
-        minQuantity,
+        minQuantity: minQuantity || 0,
         maxQuantity,
         location,
-        status,
-        tags: {
-          connect: tags?.map((tagId: string) => ({ id: tagId })) || [],
+        status: status || 'ACTIVE',
+        category: {
+          connect: { id: categoryId }
         },
-        images: {
-          create: images?.map((image: { url: string; alt?: string; isMain?: boolean }) => ({
-            url: image.url,
-            alt: image.alt,
-            isMain: image.isMain || false,
-          })) || [],
+        supplier: {
+          connect: { id: supplierId }
         },
+        ...(brandId && {
+          brand: {
+            connect: { id: brandId }
+          }
+        }),
+        ...(tags && {
+          tags: {
+            connect: tags.map((tagId: string) => ({ id: tagId }))
+          }
+        }),
+        ...(images && {
+          images: {
+            create: images.map((image: { url: string; alt?: string; isMain?: boolean }) => ({
+              url: image.url,
+              alt: image.alt,
+              isMain: image.isMain || false,
+            }))
+          }
+        }),
       },
       include: {
         category: true,
