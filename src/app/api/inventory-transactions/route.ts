@@ -25,11 +25,11 @@ export async function GET(request: Request) {
       if (endDate) where.createdAt.lte = new Date(endDate);
     }
 
-    const transactions = await prisma.inventoryTransaction.findMany({
+    const transactions = await prisma.transaction.findMany({
       where,
       include: {
         product: true,
-        batch: true,
+        user: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -56,18 +56,17 @@ export async function POST(request: Request) {
     // Start a transaction to ensure data consistency
     const result = await prisma.$transaction(async (tx) => {
       // Create the inventory transaction
-      const transaction = await tx.inventoryTransaction.create({
+      const transaction = await tx.transaction.create({
         data: {
           productId,
-          batchId,
+          userId: session.user.id,
           type,
           quantity,
           notes,
-          performedBy: session.user.name || 'Unknown',
         },
         include: {
           product: true,
-          batch: true,
+          user: true,
         },
       });
 
