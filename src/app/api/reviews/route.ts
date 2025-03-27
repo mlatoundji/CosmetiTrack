@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { PRISMA_MODELS } from '@/lib/constants'
 
 export async function GET(request: Request) {
   try {
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
     const where: any = {}
     if (productId) where.productId = productId
 
-    const reviews = await prisma.review.findMany({
+    const reviews = await prisma[PRISMA_MODELS.REVIEW].findMany({
       where,
       include: {
         product: true
@@ -43,7 +44,23 @@ export async function POST(request: Request) {
     const data = await request.json()
     const { productId, rating, comment, customerName } = data
 
-    const review = await prisma.review.create({
+    // Validate required fields
+    if (!productId || !rating) {
+      return NextResponse.json(
+        { error: 'Product ID and rating are required' },
+        { status: 400 }
+      )
+    }
+
+    // Validate rating range
+    if (rating < 1 || rating > 5) {
+      return NextResponse.json(
+        { error: 'Rating must be between 1 and 5' },
+        { status: 400 }
+      )
+    }
+
+    const review = await prisma[PRISMA_MODELS.REVIEW].create({
       data: {
         productId,
         rating,
@@ -52,22 +69,6 @@ export async function POST(request: Request) {
       },
       include: {
         product: true
-      }
-    })
-
-    // Update product average rating
-    const productReviews = await prisma.review.findMany({
-      where: { productId }
-    })
-
-    const averageRating =
-      productReviews.reduce((acc, review) => acc + review.rating, 0) /
-      productReviews.length
-
-    await prisma.product.update({
-      where: { id: productId },
-      data: {
-        averageRating
       }
     })
 
