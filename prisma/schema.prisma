@@ -1,0 +1,185 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication and access control
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  transactions  Transaction[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+// Suppliers information
+model Supplier {
+  id          String    @id @default(cuid())
+  name        String
+  contact     String?
+  email       String?
+  phone       String?
+  address     String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Products catalog
+model Product {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  sku             String    @unique
+  barcode         String?
+  purchasePrice   Float
+  salePrice       Float
+  currentPrice    Float
+  quantity        Int
+  minQuantity     Int       @default(0)
+  maxQuantity     Int?
+  location        String?
+  status          ProductStatus @default(ACTIVE)
+  categoryId      String
+  category        Category  @relation(fields: [categoryId], references: [id])
+  supplierId      String
+  supplier        Supplier  @relation(fields: [supplierId], references: [id])
+  brandId         String?
+  brand           Brand?    @relation(fields: [brandId], references: [id])
+  tags            Tag[]
+  batches         Batch[]
+  reviews         Review[]
+  images          ProductImage[]
+  transactions    Transaction[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([supplierId])
+}
+
+// Inventory transactions
+model Transaction {
+  id          String    @id @default(cuid())
+  type        TransactionType
+  quantity    Int
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   String
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+  notes       String?
+  createdAt   DateTime  @default(now())
+
+  @@index([productId])
+  @@index([userId])
+}
+
+enum TransactionType {
+  STOCK_IN
+  STOCK_OUT
+  ADJUSTMENT
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Tag {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Brand {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Batch {
+  id              String    @id @default(cuid())
+  batchNumber     String
+  productId       String
+  product         Product   @relation(fields: [productId], references: [id])
+  quantity        Int
+  purchasePrice   Float
+  expiryDate      DateTime?
+  manufacturingDate DateTime?
+  qualityChecks   QualityCheck[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model QualityCheck {
+  id          String    @id @default(cuid())
+  batchId     String
+  batch       Batch     @relation(fields: [batchId], references: [id])
+  type        String
+  status      String
+  notes       String?
+  performedBy String?
+  performedAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  rating      Int
+  comment     String?
+  customerName String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ProductImage {
+  id          String    @id @default(cuid())
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  url         String
+  alt         String?
+  isMain      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  ON_SALE
+  OUT_OF_STOCK
+  DISCONTINUED
+}

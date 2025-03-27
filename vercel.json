@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["cdg1"],
+  "env": {
+    "NODE_ENV": "staging",
+    "DATABASE_URL": "@staging-database-url",
+    "NEXTAUTH_URL": "@staging-nextauth-url",
+    "NEXTAUTH_SECRET": "@staging-nextauth-secret",
+    "LOG_LEVEL": "@staging-log-level",
+    "SENTRY_DSN": "@staging-sentry-dsn",
+    "NEW_RELIC_LICENSE_KEY": "@staging-new-relic-license-key",
+    "NEW_RELIC_APP_NAME": "@staging-new-relic-app-name"
+  }
+} 
