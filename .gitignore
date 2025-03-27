@@ -15,6 +15,7 @@ node_modules
 .next/trace
 .next/standalone
 .next/standalone/
+.next\cache
 
 # Production
 /build
