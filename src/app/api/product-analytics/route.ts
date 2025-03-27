@@ -35,7 +35,7 @@ export async function GET(request: Request) {
     }
 
     // Get inventory transactions
-    const transactions = await prisma.inventoryTransaction.findMany({
+    const transactions = await prisma.transaction.findMany({
       where: {
         productId,
         createdAt: {
@@ -51,17 +51,17 @@ export async function GET(request: Request) {
     // Calculate inventory metrics
     const inventoryMetrics = {
       totalIn: transactions
-        .filter((t) => t.type === 'IN')
+        .filter((t) => t.type === 'STOCK_IN')
         .reduce((sum, t) => sum + t.quantity, 0),
       totalOut: transactions
-        .filter((t) => t.type === 'OUT')
+        .filter((t) => t.type === 'STOCK_OUT')
         .reduce((sum, t) => sum + t.quantity, 0),
       averageDailyUsage:
-        transactions.filter((t) => t.type === 'OUT').length > 0
+        transactions.filter((t) => t.type === 'STOCK_OUT').length > 0
           ? transactions
-              .filter((t) => t.type === 'OUT')
+              .filter((t) => t.type === 'STOCK_OUT')
               .reduce((sum, t) => sum + t.quantity, 0) /
-            transactions.filter((t) => t.type === 'OUT').length
+            transactions.filter((t) => t.type === 'STOCK_OUT').length
           : 0,
     };
 
@@ -98,7 +98,7 @@ export async function GET(request: Request) {
       if (!acc[date]) {
         acc[date] = product.quantity;
       }
-      acc[date] += transaction.type === 'IN' ? transaction.quantity : -transaction.quantity;
+      acc[date] += transaction.type === 'STOCK_IN' ? transaction.quantity : -transaction.quantity;
       return acc;
     }, {} as Record<string, number>);
 
