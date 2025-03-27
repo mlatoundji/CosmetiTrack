@@ -14,8 +14,9 @@ node_modules
 .next/static
 .next/trace
 .next/standalone
-.next/standalone/
 .next\cache
+.next/cache
+.next/cache/*
 
 # Production
 /build
@@ -108,3 +109,13 @@ cypress/screenshots/
 *.pem
 .vercel
 .turbo
+.next/cache/webpack/server-development/0.pack.gz
+.next/cache/webpack/server-development/0.pack.gz
+.next/cache/webpack/server-development/1.pack.gz
+.next/cache/webpack/server-development/4.pack.gz
+.next/cache/webpack/server-development/5.pack.gz
+.next/cache/webpack/server-development/6.pack.gz
+.next/cache/webpack/server-development/7.pack.gz
+.next/cache/webpack/server-development/13.pack.gz
+.next/cache/webpack/server-development/index.pack.gz
+.next/cache/webpack/server-development/index.pack.gz.old
