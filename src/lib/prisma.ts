@@ -1,14 +1,6 @@
 import { PrismaClient } from '@prisma/client'
-import { PRISMA_MODELS } from './constants'
 
-const prisma = new PrismaClient({
-  log: ['error'],
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
-    }
-  }
-})
+const prisma = new PrismaClient()
 
 export { prisma }
 
