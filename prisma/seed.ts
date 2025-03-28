@@ -17,6 +17,36 @@ async function main() {
     },
   })
 
+  // Create categories
+  const skinCare = await prisma.category.create({
+    data: {
+      name: 'Soins du visage',
+      description: 'Produits pour le soin du visage',
+    },
+  })
+
+  const makeup = await prisma.category.create({
+    data: {
+      name: 'Maquillage',
+      description: 'Produits de maquillage',
+    },
+  })
+
+  // Create brands
+  const naturalBeauty = await prisma.brand.create({
+    data: {
+      name: 'NaturalBeauty',
+      description: 'Produits de beauté naturels',
+    },
+  })
+
+  const glamourPro = await prisma.brand.create({
+    data: {
+      name: 'GlamourPro',
+      description: 'Produits de maquillage professionnels',
+    },
+  })
+
   // Create suppliers
   const supplier1 = await prisma.supplier.create({
     data: {
@@ -37,42 +67,42 @@ async function main() {
   })
 
   // Create products
-  await prisma.product.createMany({
-    data: [
-      {
-        name: 'Crème Hydratante',
-        description: 'Crème hydratante pour le visage',
-        sku: 'CH001',
-        price: 29.99,
-        currentStock: 50,
-        minimumStock: 10,
-        category: 'Soins du visage',
-        brand: 'NaturalBeauty',
-        supplierId: supplier1.id,
-      },
-      {
-        name: 'Rouge à Lèvres Mat',
-        description: 'Rouge à lèvres longue tenue',
-        sku: 'RL001',
-        price: 19.99,
-        currentStock: 75,
-        minimumStock: 15,
-        category: 'Maquillage',
-        brand: 'GlamourPro',
-        supplierId: supplier2.id,
-      },
-      {
-        name: 'Sérum Anti-âge',
-        description: 'Sérum anti-rides concentré',
-        sku: 'SA001',
-        price: 49.99,
-        currentStock: 30,
-        minimumStock: 8,
-        category: 'Soins du visage',
-        brand: 'LuxeSkin',
-        supplierId: supplier1.id,
-      },
-    ],
+  await prisma.product.create({
+    data: {
+      name: 'Crème Hydratante',
+      description: 'Crème hydratante pour le visage',
+      sku: 'CH001',
+      barcode: 'CH001BAR',
+      purchasePrice: 15.99,
+      salePrice: 29.99,
+      currentPrice: 29.99,
+      quantity: 50,
+      minQuantity: 10,
+      maxQuantity: 100,
+      status: 'ACTIVE',
+      categoryId: skinCare.id,
+      brandId: naturalBeauty.id,
+      supplierId: supplier1.id,
+    },
+  })
+
+  await prisma.product.create({
+    data: {
+      name: 'Rouge à Lèvres Mat',
+      description: 'Rouge à lèvres longue tenue',
+      sku: 'RL001',
+      barcode: 'RL001BAR',
+      purchasePrice: 8.99,
+      salePrice: 19.99,
+      currentPrice: 19.99,
+      quantity: 75,
+      minQuantity: 15,
+      maxQuantity: 150,
+      status: 'ACTIVE',
+      categoryId: makeup.id,
+      brandId: glamourPro.id,
+      supplierId: supplier2.id,
+    },
   })
 
   console.log('Database seeded successfully')
