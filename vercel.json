@@ -7,7 +7,7 @@
   "regions": ["cdg1"],
   "env": {
     "NODE_ENV": "staging",
-    "DATABASE_URL": "your_database_url",
+    "DATABASE_URL": "postgresql://postgres.qkoenqgmwkknruzpqkla:X5KtYdLjqCTHZvpK@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1",
     "NEXTAUTH_URL": "https://cosmetitrack.vercel.app",
     "NEXTAUTH_SECRET": "your_nextauth_secret",
     "LOG_LEVEL": "info",
