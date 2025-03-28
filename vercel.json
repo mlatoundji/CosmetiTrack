@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "prisma generate && next build",
+  "buildCommand": "npx prisma generate && next build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
   "regions": ["cdg1"],
   "env": {
-    "NODE_ENV": "staging",
+    "NODE_ENV": "production",
     "NEXTAUTH_URL": "https://cosmetitrack.vercel.app",
     "LOG_LEVEL": "info"
   }
