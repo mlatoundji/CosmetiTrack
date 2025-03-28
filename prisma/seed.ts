@@ -1,10 +1,10 @@
 const { hash } = require('bcryptjs')
-const { prisma } = require('../src/lib/prisma')
+const { prisma: dbClient } = require('../src/lib/prisma')
 
 async function main() {
   // Create admin user
   const adminPassword = await hash('admin123', 12)
-  const admin = await prisma.user.upsert({
+  const admin = await dbClient.user.upsert({
     where: { email: 'admin@cosmetitrack.com' },
     update: {},
     create: {
@@ -16,14 +16,14 @@ async function main() {
   })
 
   // Create categories
-  const skinCare = await prisma.category.create({
+  const skinCare = await dbClient.category.create({
     data: {
       name: 'Soins du visage',
       description: 'Produits pour le soin du visage',
     },
   })
 
-  const makeup = await prisma.category.create({
+  const makeup = await dbClient.category.create({
     data: {
       name: 'Maquillage',
       description: 'Produits de maquillage',
@@ -31,14 +31,14 @@ async function main() {
   })
 
   // Create brands
-  const naturalBeauty = await prisma.brand.create({
+  const naturalBeauty = await dbClient.brand.create({
     data: {
       name: 'NaturalBeauty',
       description: 'Produits de beauté naturels',
     },
   })
 
-  const glamourPro = await prisma.brand.create({
+  const glamourPro = await dbClient.brand.create({
     data: {
       name: 'GlamourPro',
       description: 'Produits de maquillage professionnels',
@@ -46,7 +46,7 @@ async function main() {
   })
 
   // Create suppliers
-  const supplier1 = await prisma.supplier.create({
+  const supplier1 = await dbClient.supplier.create({
     data: {
       name: 'Beauty Wholesale',
       email: 'contact@beautywholesale.com',
@@ -55,7 +55,7 @@ async function main() {
     },
   })
 
-  const supplier2 = await prisma.supplier.create({
+  const supplier2 = await dbClient.supplier.create({
     data: {
       name: 'Cosmetics Direct',
       email: 'info@cosmeticsdirect.com',
@@ -65,7 +65,7 @@ async function main() {
   })
 
   // Create products
-  await prisma.product.create({
+  await dbClient.product.create({
     data: {
       name: 'Crème Hydratante',
       description: 'Crème hydratante pour le visage',
@@ -84,7 +84,7 @@ async function main() {
     },
   })
 
-  await prisma.product.create({
+  await dbClient.product.create({
     data: {
       name: 'Rouge à Lèvres Mat',
       description: 'Rouge à lèvres longue tenue',
@@ -112,5 +112,5 @@ main()
     process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect()
+    await dbClient.$disconnect()
   }) 
