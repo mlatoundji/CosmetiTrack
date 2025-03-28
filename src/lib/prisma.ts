@@ -5,20 +5,37 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL
+// Configuration pour la gestion des connexions
+const prismaClientSingleton = () => {
+  return new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL
+      },
     },
-  }
+    // Ajout des options de connexion
+    connection: {
+      options: {
+        statement_timeout: 60000, // 60 secondes
+        idle_in_transaction_session_timeout: 60000, // 60 secondes
+      }
+    }
+  })
+}
+
+export const prisma = globalForPrisma.prisma ?? prismaClientSingleton()
+
+// Gestion des erreurs et reconnexion
+prisma.$on('error', async () => {
+  console.error('Prisma Client error - attempting reconnection')
+  await prisma.$disconnect()
+  globalForPrisma.prisma = prismaClientSingleton()
 })
 
-// Gestion des erreurs de connexion
-prisma.$on('error', (e) => {
-  console.error('Prisma Error:', e)
-  // Reconnexion automatique en cas d'erreur
-  prisma.$disconnect()
+// Nettoyage des connexions lors de l'arrêt
+process.on('beforeExit', async () => {
+  await prisma.$disconnect()
 })
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
