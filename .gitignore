@@ -119,3 +119,4 @@ cypress/screenshots/
 .next/cache/webpack/server-development/13.pack.gz
 .next/cache/webpack/server-development/index.pack.gz
 .next/cache/webpack/server-development/index.pack.gz.old
+.env.production
