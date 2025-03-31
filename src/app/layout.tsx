@@ -8,8 +8,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'CosmetiTrack - Gestion d\'Inventaire Cosmétique',
-  description: 'Application de gestion d\'inventaire pour les entreprises de cosmétiques',
+  title: 'CosmetiTrack - Gestion d\'Inventaire',
+  description: 'Application de gestion d\'inventaire pour les entreprises',
 }
 
 export default function RootLayout({
